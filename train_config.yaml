@@ -1,0 +1,86 @@
+# Configuration d'entraînement pour train_boxing.py
+#
+# Remplacez 'data' par le chemin vers votre data.yaml (Roboflow export).
+# Les paramètres imgsz & batch peuvent être automatiquement déterminés à partir des images et de la VRAM.
+#
+# Si vous voulez forcer imgsz ou batch, mettez-les explicitement ici.
+# Exemples:
+#   model: "n"  -> mappe sur yolov8n.pt
+#   model: "yolov8n.pt" -> utilise ce fichier
+#
+# Auto-tuning:
+#   auto_tune: true -> active l'estimation automatique d'imgsz & batch
+#   sample_images: nb d'images à échantillonner pour estimer la résolution (train+val)
+#   min_imgsz / max_imgsz : limites pour imgsz recommandé
+#
+# Logging:
+#   Les logs sont écrits dans project/name/logs/train.log
+
+# chemin vers data.yaml (Roboflow)
+data: "data/roboflow/data.yaml"
+
+# modèle initial: 'n','s','m','l','x' ou nom complet yolov8n.pt
+model: "n"
+
+# training core
+epochs: 200
+
+# Si vous mettez imgsz ici, auto-tune ne le modifiera pas.
+# img size recommandé pour petits objets: 1024 (si VRAM suffisant)
+# Si imgsz n'est pas défini, le script va l'estimer à partir des images.
+# img: int (ex: 1024)
+# imgsz: 1024
+
+# batch_size ou batch: laissé vide pour auto-selection
+# batch_size: 8
+
+# device (optionnel) - peut être overridé par CLI --override-device
+# device: "cuda:0"
+
+# outputs
+project: "runs/boxing"
+name: "boxing_yolo8_auto"
+
+# ressources
+workers: 8
+
+# optimizer / lr
+optimizer: "AdamW"
+lr0: 0.0001
+lrf: 0.01
+weight_decay: 0.0005
+patience: 30
+
+# augmentations
+augment: True
+mosaic: True
+mixup: 0.0
+fliplr: 0.5
+flipud: 0.0
+copy_paste: 0.0
+rect: False
+cache: "ram"
+
+# Auto-tune options
+auto_tune: true
+sample_images: 200
+min_imgsz: 640
+max_imgsz: 1280
+base_batch_for_640: 8   # utilisé par l'heuristique pour estimer batch selon la VRAM
+
+# Export options (optionnel)
+export:
+  formats: ["onnx", "torchscript"]
+  imgsz: 1024
+
+# Evaluation post-train (optionnel)
+evaluate: true
+eval_imgsz: 1024
+eval_batch: 4
+
+# Optional: enable Weights & Biases (wandb)
+use_wandb: false
+wandb:
+  project: "boxing"
+  name: "run1"
+  mode: "online" 
